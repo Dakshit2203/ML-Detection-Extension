@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+adaptive_state.json
+adaptive_state.json.tmp
+*.sqlite
+*.db
+**/Phishtank.csv
+**/Tranco.csv
+**/malicious_phish.csv
+**/phishtank.csv
+**/tranco.csv
