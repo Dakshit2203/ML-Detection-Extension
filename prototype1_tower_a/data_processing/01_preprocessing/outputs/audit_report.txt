@@ -1,0 +1,80 @@
+=== Tower A Final Dataset Audit (read-only) ===
+Timestamp: 2026-04-06  16:39:22 UTC
+Input: D:\ML_Detection_Extension\prototype1_tower_a\data_processing\01_preprocessing\outputs\towerA_dataset.csv
+Output: D:\ML_Detection_Extension\prototype1_tower_a\data_processing\01_preprocessing\outputs\audit_report.txt
+
+[schema]
+Columns present: 15
+OK: All expected core columns present.
+
+[size]
+Total rows: 92666
+
+[missing_values]
+  url_norm: 0 missing (0.00%)
+  label: 0 missing (0.00%)
+  source: 0 missing (0.00%)
+  etld1: 135 missing (0.15%)
+
+[labels]
+  label=0: 46333 (50.00%)
+  label=1: 46333 (50.00%)
+  OK: Labels are binary (0/1).
+
+[source_integrity]
+ Source x label counts:
+label          0      1
+source                 
+kaggle     34750      0
+phishtank      0  46333
+tranco     11583      0
+
+ OK: Source/label mapping consistent if no warnings above.
+
+[duplicates]
+ Duplicate url_norm rows: 0 (0.00%)
+ eTLD+1 with conflicting labels: 0
+
+[domain_concentration]
+  label=0: urls=46330, unique_etld1=26971, avg_per_etld1=1.7177709391568723
+  label=0: max_urls_single_etld1=1075
+    top10_total=4276 (9.23%)
+  label=1: urls=46201, unique_etld1=5004, avg_per_etld1=9.2328137490008
+  label=1: max_urls_single_etld1=7691
+    top10_total=26227 (56.77%)
+
+[structural_distributions]
+  Parse failures (urlparse): 0 (0.00%)
+  URL length:
+    label=0: min=12 median=43.0 mean=53.6 max=744
+    label=1: min=12 median=40.0 mean=65.9 max=25523
+  Has query:
+    label=0: 6146 / 46333 (13.26%)
+    label=1: 9821 / 46333 (21.20%)
+  Has fragment:
+    label=0: 6 / 46333 (0.01%)
+    label=1: 363 / 46333 (0.78%)
+  Slash count:
+    label=0: min=2 median=4.0 mean=3.9 max=30
+    label=1: min=2 median=3.0 mean=3.9 max=104
+  IP host:
+    label=0: 3 / 46333 (0.01%)
+    label=1: 132 / 46333 (0.28%)
+  Punycode host:
+    label=0: 25 / 46333 (0.05%)
+    label=1: 67 / 46333 (0.14%)
+  Percent-encoding:
+    label=0: min=0 median=0.0 mean=0.4 max=128
+    label=1: min=0 median=0.0 mean=0.1 max=115
+  Base64-like:
+    label=0: 13712 / 46333 (29.59%)
+    label=1: 18929 / 46333 (40.85%)
+  Uppercase path/query:
+    label=0: 12427 / 46333 (26.82%)
+    label=1: 22272 / 46333 (48.07%)
+
+  Shortcut-risk flags:
+ OK: Query presence - benign=0.13, phish=0.21
+ OK: Median slash count - benign=4.0, phish=3.0
+
+=== Audit complete ===

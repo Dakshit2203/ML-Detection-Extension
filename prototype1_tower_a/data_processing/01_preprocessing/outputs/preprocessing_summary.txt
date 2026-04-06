@@ -1,0 +1,197 @@
+=== Tower A Preprocessing Summary ===
+Timestamp: 2026-04-06 16:37:54 UTC
+Seed: 42
+
+[phishtank]
+Raw rows: 46358
+Clean rows (pre-dedup): 46351
+Dedup removed: 18
+Clean unique URLs: 46333
+
+Rejected (by reason):
+  Total rejected: 7
+ - internal_whitespace: 7
+
+Scheme:
+  Raw has scheme: 46333 / 46333 (100.00%)
+  Placeholder added: 0 / 46333 (0.00%)
+
+Ports:
+  URLs with explicit port: 19 / 46333 (0.04%)
+  Default: 80: 1
+  Default: 443: 11
+   Non-default ports:
+ - 2096: 3 (0.01%)
+ - 8080: 2 (0.00%)
+ - 2083: 1 (0.00%)
+ - 8989: 1 (0.00%)
+
+Structure:
+  Has path: 31547 / (46333 68.09%)
+  Has query: 9821 / (46333 21.20%)
+  Has fragments: 363 / (46333 0.78%)
+
+URL length (url_norm):
+  min=12 median=40.0 mean=65.9 max=25523
+  >500 chars: 102 / 46333
+  >1000 chars: 27 / 46333
+
+Domains:
+  Unique eTLD+1: 5004
+  Avg URLs per eTLD+1: 9.259192645883294
+  Max URLs for a single eTLD+1: 7691
+  Top suffixes:
+ - com: 23439 (50.59%)
+ - de: 2722 (5.87%)
+ - app: 2612 (5.64%)
+ - me: 2524 (5.45%)
+ - dev: 2395 (5.17%)
+ - to: 2048 (4.42%)
+ - ly: 2002 (4.32%)
+ - io: 1211 (2.61%)
+ - link: 891 (1.92%)
+ - co: 827 (1.78%)
+ - 5662: 5662 (12.22%)
+
+--------------------------------------------------
+
+[kaggle_benign]
+Raw rows: 428103
+Clean rows (pre-dedup): 427961
+Dedup removed: 86
+Clean unique URLs: 427875
+
+Rejected (by reason):
+  Total rejected: 142
+ - internal_whitespace: 142
+
+Scheme:
+  Raw has scheme: 35377 / 427875 (8.27%)
+  Placeholder added: 392498 / 427875 (91.73%)
+
+Ports:
+  URLs with explicit port: 148 / 427875 (0.03%)
+  Default: 80: 2
+  Default: 443: 0
+   Non-default ports:
+ - 8890: 69 (0.02%)
+ - 8080: 18 (0.00%)
+ - 84: 11 (0.00%)
+ - 81: 10 (0.00%)
+ - 8881: 6 (0.00%)
+ - 83: 5 (0.00%)
+ - 82: 4 (0.00%)
+ - 4201: 4 (0.00%)
+ - 8001: 3 (0.00%)
+ - 5800: 2 (0.00%)
+ - 8100: 2 (0.00%)
+ - 88: 1 (0.00%)
+ - 2012: 1 (0.00%)
+ - 3388: 1 (0.00%)
+ - 5062: 1 (0.00%)
+ - 7195: 1 (0.00%)
+ - 8004: 1 (0.00%)
+ - 8020: 1 (0.00%)
+ - 8383: 1 (0.00%)
+ - 8888: 1 (0.00%)
+ - 9010: 1 (0.00%)
+ - 10080: 1 (0.00%)
+ - 49160: 1 (0.00%)
+
+Structure:
+  Has path: 375691 / (427875 87.80%)
+  Has query: 72706 / (427875 16.99%)
+  Has fragments: 95 / (427875 0.02%)
+
+URL length (url_norm):
+  min=13 median=53.0 mean=64.1 max=2182
+  >500 chars: 99 / 427875
+  >1000 chars: 15 / 427875
+
+Domains:
+  Unique eTLD+1: 104748
+  Avg URLs per eTLD+1: 4.084803528468324
+  Max URLs for a single eTLD+1: 12876
+  Top suffixes:
+ - com: 309261 (72.28%)
+ - org: 37531 (8.77%)
+ - net: 18975 (4.43%)
+ - ca: 8433 (1.97%)
+ - edu: 6936 (1.62%)
+ - co.uk: 4849 (1.13%)
+ - gov: 2618 (0.61%)
+ - com.br: 1877 (0.44%)
+ - info: 1781 (0.42%)
+ - ru: 1706 (0.40%)
+ - 33908: 33908 (7.92%)
+
+--------------------------------------------------
+
+[tranco]
+Raw rows: 1000000
+Clean rows (pre-dedup): 1000000
+Dedup removed: 0
+Clean unique URLs: 1000000
+
+Rejected (by reason):
+  Total rejected: 0
+
+Scheme:
+  Raw has scheme: 0 / 1000000 (0.00%)
+  Placeholder added: 1000000 / 1000000 (100.00%)
+
+Ports:
+  URLs with explicit port: 0 / 1000000 (0.00%)
+  Default: 80: 0
+  Default: 443: 0
+   Non-default ports:
+ (none)
+
+Structure:
+  Has path: 0 / (1000000 0.00%)
+  Has query: 0 / (1000000 0.00%)
+  Has fragments: 0 / (1000000 0.00%)
+
+URL length (url_norm):
+  min=11 median=20.0 mean=20.5 max=75
+  >500 chars: 0 / 1000000
+  >1000 chars: 0 / 1000000
+
+Domains:
+  Unique eTLD+1: 999998
+  Avg URLs per eTLD+1: 1.000002000004
+  Max URLs for a single eTLD+1: 3
+  Top suffixes:
+ - com: 420693 (42.07%)
+ - cn: 53813 (5.38%)
+ - net: 50949 (5.09%)
+ - ru: 41666 (4.17%)
+ - org: 35624 (3.56%)
+ - de: 20797 (2.08%)
+ - com.br: 14016 (1.40%)
+ - co.uk: 12895 (1.29%)
+ - com.cn: 10847 (1.08%)
+ - io: 10277 (1.03%)
+ - 328423: 328423 (32.84%)
+
+--------------------------------------------------
+
+[leakage_mitigation]
+Phishing unique eTLD+1: 5004
+Kaggle benign removed (overlap): 23081
+Tranco removed (overlap): 907
+
+[benign_pool_pre_balance]
+Total benign pool: 1403887
+Kaggle benign: 404794 (28.83%)
+Tranco benign: 999093 (71.17%)
+
+--------------------------------------------------
+
+[final_dataset]
+Total rows: 92666
+Phishing: 46333
+Benign:   46333
+Benign source mix:
+  - kaggle: 34750 (75.00%)
+  - tranco: 11583 (25.00%)
