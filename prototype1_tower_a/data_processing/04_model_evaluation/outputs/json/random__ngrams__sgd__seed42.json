@@ -1,0 +1,130 @@
+{
+  "meta": {
+    "split": "random",
+    "regime": "ngrams",
+    "model": "sgd",
+    "seed": 42,
+    "train_path": "D:\\ML_Detection_Extension\\prototype1_tower_a\\data_processing\\03_data_splitting\\outputs\\random_baseline\\train.csv",
+    "val_path": "D:\\ML_Detection_Extension\\prototype1_tower_a\\data_processing\\03_data_splitting\\outputs\\random_baseline\\val.csv",
+    "test_path": "D:\\ML_Detection_Extension\\prototype1_tower_a\\data_processing\\03_data_splitting\\outputs\\random_baseline\\test.csv",
+    "fpr_cap": 0.02,
+    "recall_target": 0.95,
+    "tfidf_ngram_range": "3-5",
+    "tfidf_max_features": 50000,
+    "tfidf_min_df": 2,
+    "tfidf_vocab_size": 50000
+  },
+  "thresholds": {
+    "best_f1": 0.3444187346894215,
+    "recall_at_fpr_cap": 0.4247166504597989,
+    "precision_at_recall_target": 0.3408113216939259
+  },
+  "val_metrics_best_f1": {
+    "roc_auc": 0.9888606179804358,
+    "pr_auc": 0.9905648796349192,
+    "accuracy": 0.9512230215827339,
+    "balanced_accuracy": 0.9512230215827338,
+    "precision": 0.9533102052616363,
+    "recall": 0.9489208633093525,
+    "f1": 0.9511104701471013,
+    "specificity": 0.9535251798561151,
+    "fpr": 0.04647482014388489,
+    "fnr": 0.05107913669064748,
+    "tp": 6595,
+    "fp": 323,
+    "tn": 6627,
+    "fn": 355
+  },
+  "val_policy_metrics": {
+    "recall_at_fpr_cap": {
+      "roc_auc": 0.9888606179804358,
+      "pr_auc": 0.9905648796349192,
+      "accuracy": 0.9502877697841726,
+      "balanced_accuracy": 0.9502877697841727,
+      "precision": 0.9788829380260138,
+      "recall": 0.920431654676259,
+      "f1": 0.9487578791249537,
+      "specificity": 0.9801438848920864,
+      "fpr": 0.019856115107913668,
+      "fnr": 0.079568345323741,
+      "tp": 6397,
+      "fp": 138,
+      "tn": 6812,
+      "fn": 553
+    },
+    "precision_at_recall_target": {
+      "roc_auc": 0.9888606179804358,
+      "pr_auc": 0.9905648796349192,
+      "accuracy": 0.9502877697841726,
+      "balanced_accuracy": 0.9502877697841727,
+      "precision": 0.9504822225421045,
+      "recall": 0.9500719424460432,
+      "f1": 0.9502770382096856,
+      "specificity": 0.9505035971223021,
+      "fpr": 0.04949640287769784,
+      "fnr": 0.04992805755395684,
+      "tp": 6603,
+      "fp": 344,
+      "tn": 6606,
+      "fn": 347
+    }
+  },
+  "test_metrics_best_f1": {
+    "roc_auc": 0.9895370425961388,
+    "pr_auc": 0.9911403766552545,
+    "accuracy": 0.9512230215827339,
+    "balanced_accuracy": 0.9512230215827338,
+    "precision": 0.9543610547667343,
+    "recall": 0.9477697841726619,
+    "f1": 0.951053999422466,
+    "specificity": 0.9546762589928057,
+    "fpr": 0.045323741007194246,
+    "fnr": 0.05223021582733813,
+    "tp": 6587,
+    "fp": 315,
+    "tn": 6635,
+    "fn": 363
+  },
+  "test_policy_metrics": {
+    "recall_at_fpr_cap": {
+      "roc_auc": 0.9895370425961388,
+      "pr_auc": 0.9911403766552545,
+      "accuracy": 0.9492805755395683,
+      "balanced_accuracy": 0.9492805755395683,
+      "precision": 0.9778117827084928,
+      "recall": 0.9194244604316547,
+      "f1": 0.9477196885428254,
+      "specificity": 0.979136690647482,
+      "fpr": 0.020863309352517987,
+      "fnr": 0.08057553956834532,
+      "tp": 6390,
+      "fp": 145,
+      "tn": 6805,
+      "fn": 560
+    },
+    "precision_at_recall_target": {
+      "roc_auc": 0.9895370425961388,
+      "pr_auc": 0.9911403766552545,
+      "accuracy": 0.9507913669064748,
+      "balanced_accuracy": 0.9507913669064748,
+      "precision": 0.9528765539173172,
+      "recall": 0.9484892086330935,
+      "f1": 0.9506778194404384,
+      "specificity": 0.9530935251798561,
+      "fpr": 0.04690647482014389,
+      "fnr": 0.05151079136690648,
+      "tp": 6592,
+      "fp": 326,
+      "tn": 6624,
+      "fn": 358
+    }
+  },
+  "efficiency": {
+    "feature_extraction_ms_per_url": 0.26102413999615237,
+    "feature_extraction_note": null,
+    "inference_ms_per_url": 0.0005965700023807585,
+    "end_to_end_ms_per_url": 0.26162070999853315,
+    "model_size_mb": 0.38249874114990234,
+    "vectorizer_size_mb": 1.6180200576782227
+  }
+}

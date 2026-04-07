@@ -1,0 +1,128 @@
+{
+  "meta": {
+    "split": "random",
+    "regime": "AE",
+    "model": "rf",
+    "seed": 42,
+    "train_path": "D:\\ML_Detection_Extension\\prototype1_tower_a\\data_processing\\03_data_splitting\\outputs\\random_baseline\\train.csv",
+    "val_path": "D:\\ML_Detection_Extension\\prototype1_tower_a\\data_processing\\03_data_splitting\\outputs\\random_baseline\\val.csv",
+    "test_path": "D:\\ML_Detection_Extension\\prototype1_tower_a\\data_processing\\03_data_splitting\\outputs\\random_baseline\\test.csv",
+    "fpr_cap": 0.02,
+    "recall_target": 0.95,
+    "features_ae_path": "D:\\ML_Detection_Extension\\prototype1_tower_a\\data_processing\\02_feature_engineering\\outputs\\features_handcrafted_AE.csv",
+    "n_features": 35
+  },
+  "thresholds": {
+    "best_f1": 0.47,
+    "recall_at_fpr_cap": 0.5875,
+    "precision_at_recall_target": 0.445
+  },
+  "val_metrics_best_f1": {
+    "roc_auc": 0.989979390300709,
+    "pr_auc": 0.9916316126312235,
+    "accuracy": 0.9569064748201439,
+    "balanced_accuracy": 0.9569064748201439,
+    "precision": 0.9665050683120318,
+    "recall": 0.9466187050359712,
+    "f1": 0.9564585302028058,
+    "specificity": 0.9671942446043166,
+    "fpr": 0.03280575539568345,
+    "fnr": 0.053381294964028776,
+    "tp": 6579,
+    "fp": 228,
+    "tn": 6722,
+    "fn": 371
+  },
+  "val_policy_metrics": {
+    "recall_at_fpr_cap": {
+      "roc_auc": 0.989979390300709,
+      "pr_auc": 0.9916316126312235,
+      "accuracy": 0.9528776978417266,
+      "balanced_accuracy": 0.9528776978417266,
+      "precision": 0.9788528830062376,
+      "recall": 0.9257553956834532,
+      "f1": 0.9515640020705465,
+      "specificity": 0.98,
+      "fpr": 0.02,
+      "fnr": 0.07424460431654677,
+      "tp": 6434,
+      "fp": 139,
+      "tn": 6811,
+      "fn": 516
+    },
+    "precision_at_recall_target": {
+      "roc_auc": 0.989979390300709,
+      "pr_auc": 0.9916316126312235,
+      "accuracy": 0.9564028776978417,
+      "balanced_accuracy": 0.9564028776978417,
+      "precision": 0.9621212121212122,
+      "recall": 0.9502158273381295,
+      "f1": 0.9561314608368322,
+      "specificity": 0.962589928057554,
+      "fpr": 0.03741007194244604,
+      "fnr": 0.049784172661870504,
+      "tp": 6604,
+      "fp": 260,
+      "tn": 6690,
+      "fn": 346
+    }
+  },
+  "test_metrics_best_f1": {
+    "roc_auc": 0.9913917085037005,
+    "pr_auc": 0.9925066963355361,
+    "accuracy": 0.9564028776978417,
+    "balanced_accuracy": 0.9564028776978417,
+    "precision": 0.9590448625180897,
+    "recall": 0.9535251798561151,
+    "f1": 0.9562770562770563,
+    "specificity": 0.9592805755395684,
+    "fpr": 0.040719424460431655,
+    "fnr": 0.04647482014388489,
+    "tp": 6627,
+    "fp": 283,
+    "tn": 6667,
+    "fn": 323
+  },
+  "test_policy_metrics": {
+    "recall_at_fpr_cap": {
+      "roc_auc": 0.9913917085037005,
+      "pr_auc": 0.9925066963355361,
+      "accuracy": 0.9555395683453237,
+      "balanced_accuracy": 0.9555395683453238,
+      "precision": 0.9743781839976027,
+      "recall": 0.9356834532374101,
+      "f1": 0.9546388725778039,
+      "specificity": 0.9753956834532375,
+      "fpr": 0.02460431654676259,
+      "fnr": 0.06431654676258992,
+      "tp": 6503,
+      "fp": 171,
+      "tn": 6779,
+      "fn": 447
+    },
+    "precision_at_recall_target": {
+      "roc_auc": 0.9913917085037005,
+      "pr_auc": 0.9925066963355361,
+      "accuracy": 0.9549640287769784,
+      "balanced_accuracy": 0.9549640287769784,
+      "precision": 0.9544409313020983,
+      "recall": 0.9555395683453237,
+      "f1": 0.954989933851021,
+      "specificity": 0.9543884892086331,
+      "fpr": 0.045611510791366904,
+      "fnr": 0.04446043165467626,
+      "tp": 6641,
+      "fp": 317,
+      "tn": 6633,
+      "fn": 309
+    }
+  },
+  "efficiency": {
+    "feature_extraction_ms_per_url": null,
+    "feature_extraction_note": "AE features precomputed in Phase 2; extraction latency not measured.",
+    "inference_ms_per_url": 0.3686927599948831,
+    "end_to_end_ms_per_url": 0.3686927599948831,
+    "model_size_mb": 240.40148258209229,
+    "vectorizer_size_mb": null
+  }
+}

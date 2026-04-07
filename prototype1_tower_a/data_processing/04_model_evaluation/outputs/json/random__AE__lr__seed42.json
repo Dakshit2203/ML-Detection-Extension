@@ -1,0 +1,128 @@
+{
+  "meta": {
+    "split": "random",
+    "regime": "AE",
+    "model": "lr",
+    "seed": 42,
+    "train_path": "D:\\ML_Detection_Extension\\prototype1_tower_a\\data_processing\\03_data_splitting\\outputs\\random_baseline\\train.csv",
+    "val_path": "D:\\ML_Detection_Extension\\prototype1_tower_a\\data_processing\\03_data_splitting\\outputs\\random_baseline\\val.csv",
+    "test_path": "D:\\ML_Detection_Extension\\prototype1_tower_a\\data_processing\\03_data_splitting\\outputs\\random_baseline\\test.csv",
+    "fpr_cap": 0.02,
+    "recall_target": 0.95,
+    "features_ae_path": "D:\\ML_Detection_Extension\\prototype1_tower_a\\data_processing\\02_feature_engineering\\outputs\\features_handcrafted_AE.csv",
+    "n_features": 35
+  },
+  "thresholds": {
+    "best_f1": 0.666523193043767,
+    "recall_at_fpr_cap": 0.1717200743790265,
+    "precision_at_recall_target": 0.9056589613589996
+  },
+  "val_metrics_best_f1": {
+    "roc_auc": 0.990735479530045,
+    "pr_auc": 0.9931618257110338,
+    "accuracy": 0.9794964028776978,
+    "balanced_accuracy": 0.9794964028776978,
+    "precision": 0.9964248473111873,
+    "recall": 0.9624460431654677,
+    "f1": 0.9791407450779478,
+    "specificity": 0.996546762589928,
+    "fpr": 0.0034532374100719426,
+    "fnr": 0.03755395683453237,
+    "tp": 6689,
+    "fp": 24,
+    "tn": 6926,
+    "fn": 261
+  },
+  "val_policy_metrics": {
+    "recall_at_fpr_cap": {
+      "roc_auc": 0.990735479530045,
+      "pr_auc": 0.9931618257110338,
+      "accuracy": 0.9756834532374101,
+      "balanced_accuracy": 0.9756834532374101,
+      "precision": 0.9798258345428157,
+      "recall": 0.9713669064748202,
+      "f1": 0.9755780346820809,
+      "specificity": 0.98,
+      "fpr": 0.02,
+      "fnr": 0.028633093525179856,
+      "tp": 6751,
+      "fp": 139,
+      "tn": 6811,
+      "fn": 199
+    },
+    "precision_at_recall_target": {
+      "roc_auc": 0.990735479530045,
+      "pr_auc": 0.9931618257110338,
+      "accuracy": 0.9753237410071942,
+      "balanced_accuracy": 0.9753237410071942,
+      "precision": 0.998792088177563,
+      "recall": 0.9517985611510792,
+      "f1": 0.9747292418772563,
+      "specificity": 0.9988489208633093,
+      "fpr": 0.0011510791366906475,
+      "fnr": 0.04820143884892086,
+      "tp": 6615,
+      "fp": 8,
+      "tn": 6942,
+      "fn": 335
+    }
+  },
+  "test_metrics_best_f1": {
+    "roc_auc": 0.9912759898555976,
+    "pr_auc": 0.992331046009351,
+    "accuracy": 0.9814388489208633,
+    "balanced_accuracy": 0.9814388489208633,
+    "precision": 0.9967339667458432,
+    "recall": 0.9660431654676259,
+    "f1": 0.9811486190267427,
+    "specificity": 0.9968345323741007,
+    "fpr": 0.0031654676258992807,
+    "fnr": 0.0339568345323741,
+    "tp": 6714,
+    "fp": 22,
+    "tn": 6928,
+    "fn": 236
+  },
+  "test_policy_metrics": {
+    "recall_at_fpr_cap": {
+      "roc_auc": 0.9912759898555976,
+      "pr_auc": 0.992331046009351,
+      "accuracy": 0.9771223021582733,
+      "balanced_accuracy": 0.9771223021582733,
+      "precision": 0.9786374133949192,
+      "recall": 0.9755395683453237,
+      "f1": 0.9770860354517942,
+      "specificity": 0.978705035971223,
+      "fpr": 0.021294964028776977,
+      "fnr": 0.02446043165467626,
+      "tp": 6780,
+      "fp": 148,
+      "tn": 6802,
+      "fn": 170
+    },
+    "precision_at_recall_target": {
+      "roc_auc": 0.9912759898555976,
+      "pr_auc": 0.992331046009351,
+      "accuracy": 0.9776978417266187,
+      "balanced_accuracy": 0.9776978417266187,
+      "precision": 0.998049804980498,
+      "recall": 0.9572661870503597,
+      "f1": 0.9772326674500588,
+      "specificity": 0.9981294964028777,
+      "fpr": 0.0018705035971223023,
+      "fnr": 0.042733812949640286,
+      "tp": 6653,
+      "fp": 13,
+      "tn": 6937,
+      "fn": 297
+    }
+  },
+  "efficiency": {
+    "feature_extraction_ms_per_url": null,
+    "feature_extraction_note": "AE features precomputed in Phase 2; extraction latency not measured.",
+    "inference_ms_per_url": 0.0008579499903135001,
+    "end_to_end_ms_per_url": 0.0008579499903135001,
+    "model_size_mb": 0.0010519027709960938,
+    "vectorizer_size_mb": null
+  }
+}
