@@ -1,0 +1,37 @@
+=== Tower A Primary Split Summary (Domain-level by eTLD+1) ===
+Seed: 42
+Target fractions: train=0.70  val=0.15  test=0.15
+
+Total rows: 92,666
+Rows with missing eTLD+1: 135 (0.15%)
+Missing eTLD+1 policy: assigned to TRAIN only
+
+[Row counts by split x label]
+label      0      1
+split              
+test    6907   3009
+train  32727  38988
+val     6699   4336
+
+[Row percentages by split]
+ train: 71,715 (77.39%)
+ val: 11,035 (11.91%)
+ test: 9,916 (10.70%)
+
+[Unique eTLD+1 groups by split x label (non-missing only)]
+label      0     1
+split             
+test    4045   750
+train  18880  3503
+val     4046   751
+
+[Leakage check: eTLD+1 intersections across splits]
+ train ∩ val: 0 (expected 0)
+ train ∩ test: 0 (expected 0)
+ val ∩ test: 0 (expected 0)
+
+[Files written]
+D:\ML_Detection_Extension\prototype1_tower_a\data_processing\03_data_splitting\outputs\etld1\splits_manifest.csv
+D:\ML_Detection_Extension\prototype1_tower_a\data_processing\03_data_splitting\outputs\etld1\train.csv
+D:\ML_Detection_Extension\prototype1_tower_a\data_processing\03_data_splitting\outputs\etld1\val.csv
+D:\ML_Detection_Extension\prototype1_tower_a\data_processing\03_data_splitting\outputs\etld1\test.csv

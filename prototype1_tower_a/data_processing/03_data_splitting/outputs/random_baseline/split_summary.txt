@@ -1,0 +1,26 @@
+=== Tower A Random Split Summary (URL-level baseline) ===
+Seed: 42
+Target fractions: train=0.70  val=0.15  test=0.15
+
+NOTE: Random URL-level split - the same eTLD+1 may appear in train and test.
+Metrics on this split are inflated by domain memorisation.
+
+Total rows: 92,666
+
+[Row counts by split x label]
+label      0      1
+split              
+test    6950   6950
+train  32433  32433
+val     6950   6950
+
+[Row percentages by split]
+ train: 64,866 (70.00%)
+ val: 13,900 (15.00%)
+ test: 13,900 (15.00%)
+
+[Files written]
+D:\ML_Detection_Extension\prototype1_tower_a\data_processing\03_data_splitting\outputs\random_baseline\splits_manifest.csv
+D:\ML_Detection_Extension\prototype1_tower_a\data_processing\03_data_splitting\outputs\random_baseline\train.csv
+D:\ML_Detection_Extension\prototype1_tower_a\data_processing\03_data_splitting\outputs\random_baseline\val.csv
+D:\ML_Detection_Extension\prototype1_tower_a\data_processing\03_data_splitting\outputs\random_baseline\test.csv
