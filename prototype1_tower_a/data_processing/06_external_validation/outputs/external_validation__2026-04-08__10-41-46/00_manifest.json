@@ -1,0 +1,41 @@
+{
+  "created_at": "2026-04-08T10:41:51.156313",
+  "run_dir": "D:\\ML_Detection_Extension\\prototype1_tower_a\\data_processing\\06_external_validation\\outputs\\external_validation__2026-04-08__10-41-46",
+  "original_dataset": "D:\\ML_Detection_Extension\\prototype1_tower_a\\data_processing\\01_preprocessing\\outputs\\towerA_dataset.csv",
+  "phishtank_file": "D:\\ML_Detection_Extension\\prototype1_tower_a\\data_processing\\06_external_validation\\raw\\phishtank.csv",
+  "tranco_file": "D:\\ML_Detection_Extension\\prototype1_tower_a\\data_processing\\06_external_validation\\raw\\tranco.csv",
+  "top_n_domains": 10000,
+  "scenarios": {
+    "aggressive": {
+      "paths": [
+        "/",
+        "/login",
+        "/signin",
+        "/account",
+        "/verify",
+        "/auth"
+      ],
+      "rows_before_overlap_removal": 106348,
+      "rows_after_overlap_removal": 53191,
+      "label_counts": {
+        "0": 53190,
+        "1": 1
+      }
+    },
+    "neutral": {
+      "paths": [
+        "/",
+        "/about",
+        "/contact",
+        "/products",
+        "/news"
+      ],
+      "rows_before_overlap_removal": 96348,
+      "rows_after_overlap_removal": 44326,
+      "label_counts": {
+        "0": 44325,
+        "1": 1
+      }
+    }
+  }
+}

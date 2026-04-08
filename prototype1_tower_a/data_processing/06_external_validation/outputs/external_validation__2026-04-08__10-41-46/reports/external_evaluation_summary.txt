@@ -1,0 +1,34 @@
+External evaluation - 2026-04-08T10:43:09.472820
+Run dir: D:\ML_Detection_Extension\prototype1_tower_a\data_processing\06_external_validation\outputs\external_validation__2026-04-08__10-41-46
+Model: D:\ML_Detection_Extension\prototype1_tower_a\backend\artifacts\model_lr.joblib
+=== aggressive ===
+Rows: 53,191 | Labels: {'0': 53190, '1': 1}
+ROC-AUC: 1.0000 | PR-AUC: 1.0000
+Benign scores - mean=0.9467 p95=0.9877
+Phish scores - mean=1.0000 p95=1.0000
+
+Stored training thresholds:
+ best_f1: t=0.297052 FPR=1.0000 recall=1.0000 prec=0.0000
+ fpr_cap_0.02: t=0.146107 FPR=1.0000 recall=1.0000 prec=0.0000
+ recall_target_0.95: t=0.755170 FPR=1.0000 recall=1.0000 prec=0.0000
+Externally calibrated thresholds (quantile):
+ fpr_0.005: t=0.992666 FPR=0.0050 recall=1.0000 prec=0.0037
+ fpr_0.010: t=0.991460 FPR=0.0100 recall=1.0000 prec=0.0019
+ fpr_0.020: t=0.990290 FPR=0.0202 recall=1.0000 prec=0.0009
+ fpr_0.050: t=0.987682 FPR=0.0502 recall=1.0000 prec=0.0004
+
+=== neutral ===
+Rows: 44,326 | Labels: {'0': 44325, '1': 1}
+ROC-AUC: 1.0000 | PR-AUC: 1.0000
+Benign scores - mean=0.9654 p95=0.9883
+Phish scores - mean=1.0000 p95=1.0000
+
+Stored training thresholds:
+ best_f1: t=0.297052 FPR=1.0000 recall=1.0000 prec=0.0000
+ fpr_cap_0.02: t=0.146107 FPR=1.0000 recall=1.0000 prec=0.0000
+ recall_target_0.95: t=0.755170 FPR=1.0000 recall=1.0000 prec=0.0000
+Externally calibrated thresholds (quantile):
+ fpr_0.005: t=0.993133 FPR=0.0050 recall=1.0000 prec=0.0045
+ fpr_0.010: t=0.991911 FPR=0.0100 recall=1.0000 prec=0.0022
+ fpr_0.020: t=0.990566 FPR=0.0204 recall=1.0000 prec=0.0011
+ fpr_0.050: t=0.988339 FPR=0.0501 recall=1.0000 prec=0.0005

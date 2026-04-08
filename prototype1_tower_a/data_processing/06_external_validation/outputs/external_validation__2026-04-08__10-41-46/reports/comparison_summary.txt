@@ -1,0 +1,7 @@
+=== External Validation Comparison Summary ===
+Generated: 2026-04-08T10:43:37.986787
+Run dir: D:\ML_Detection_Extension\prototype1_tower_a\data_processing\06_external_validation\outputs\external_validation__2026-04-08__10-41-46
+
+Scenario        PR-AUC     ROC-AUC   
+aggressive      1.0000     1.0000    
+neutral         1.0000     1.0000    
