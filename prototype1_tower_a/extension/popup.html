@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<!--
+  Tower A - Prototype 1 - popup.html
+
+  Purpose
+  The extension action popup. Displays the Tower A phishing risk score for the URL that is currently open in the
+  active tab, or for the most recently scanned URL if no auto-scan result is available yet.
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tower A - Phishing Detector</title>
+  <style>
+    /* Reset and base */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      width: 360px;
+      min-height: 200px;
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      color: #1a1a2e;
+      background: #f5f7fb;
+    }
+    
+    /* Header */
+    .header {
+      background: #1f3864;
+      color: #fff;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header h1 {
+      font-size: 14px;
+      font-weight: bold;
+      letter-spacing: 0.3px;
+    }
+    .header .version {
+      font-size: 10px;
+      opacity: 0.65;
+    } 
+
+    /* Body padding */
+    .body { padding: 12px 14px; }
+
+    /* URL row */
+    .url-row {
+      background: #e8edf5;
+      border-radius: 4px;
+      padding: 6px 10px;
+      margin-bottom: 10px;
+      font-size: 11px;
+      color: #333;
+      word-break: break-all;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Score card */
+    .score-card {
+      background: #fff;
+      border: 1px solid #dde3ef;
+      border-radius: 6px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+    } 
+
+    /* Risk pill: colour matches badge colours in service_worker.js */
+    .risk-pill {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: bold;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+    .risk-pill.safe { background: #2e7d32; }
+    .risk-pill.low { background: #f9a825; color: #333; }
+    .risk-pill.suspicious { background: #ef6c00; }
+    .risk-pill.danger { background: #c62828; }
+    .risk-pill.unknown { background: #616161; }
+
+    /* p_phish score: large prominent number */
+    .p-score {
+      font-size: 28px;
+      font-weight: bold;
+      color: #1f3864;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .p-label {
+      font-size: 10px;
+      color: #666;
+      margin-bottom: 8px;
+    }
+
+    /* Decision row */
+    .decision-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+    }
+    .decision-badge {
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    .decision-badge.allow { background: #e8f5e9; color: #2e7d32; }
+    .decision-badge.warn { background: #fff3e0; color: #ef6c00; }
+    .decision-badge.block { background: #ffebee; color: #c62828; }
+    
+    /* Threshold state */
+    .threshold-row {
+      font-size: 11px;
+      color: #555;
+      background: #eef2fb;
+      border-radius: 4px;
+      padding: 5px 10px;
+      margin-bottom: 10px;
+    }
+    .threshold-row span { font-weight: bold; color: #1f3864; }
+
+    /* Scan Now button */
+    #scanBtn {
+      width: 100%;
+      padding: 8px;
+      background: #2e5fac;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    #scanBtn:hover { background: #1a3a6b; }
+    #scanBtn:active { background: #12285a; }
+    #scanBtn:disabled { background: #9ba8c0; cursor: default; }
+    
+    /* Status / error text */
+    #statusText {
+      margin-top: 8px;
+      font-size: 11px;
+      color: #888;
+      text-align: center;
+      min-height: 16px;
+    }
+    #statusText.error { color: #c62828; }
+
+    /* Hidden state */
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <h1>Tower A - Phishing Detector</h1>
+    <span class="version">Prototype 1</span>
+  </div>
+
+  <!-- Body -->
+  <div class="body">
+
+    <!-- URL being scored -->
+    <div id="urlDisplay" class="url-row">Loading…</div>
+
+    <!-- Main score card (hidden until a result is available) -->
+    <div id="scoreCard" class="score-card hidden">
+      <span id="riskPill" class="risk-pill unknown">-</span>
+
+      <div id="pScore" class="p-score">-</div>
+      <div class="p-label">phishing probability (p_phish)</div>
+
+      <div class="decision-row">
+        <span>Decision:</span>
+        <span id="decisionBadge" class="decision-badge">-</span>
+      </div>
+    </div>
+      
+    <!-- Adaptive threshold phase indicator -->
+    <div id="thresholdRow" class="threshold-row hidden">
+      Adaptive phase: <span id="phaseLabel">-</span>
+      &nbsp;|&nbsp;
+      Buffer: <span id="bufferSize">-</span> URLs
+    </div>
+
+    <!-- Scan Now button -->
+    <button id="scanBtn">Scan Current Page</button>
+
+    <!-- Status / loading / error -->
+    <div id="statusText"></div>
+
+  </div>
+
+  <!-- popup.js handles all logic: no inline scripts allowed in MV3 -->
+  <script src="popup.js"></script> 
+</body>
+</html>

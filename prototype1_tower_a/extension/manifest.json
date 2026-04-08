@@ -1,0 +1,38 @@
+{
+  "manifest_version": 3,
+  "name": "Tower A — Phishing Detector (Prototype 1)",
+  "version": "1.0.0",
+  "description": "Real-time phishing URL detection using the Tower A LR model with adaptive quantile thresholding.",
+
+  "permissions": [
+    "activeTab",
+    "storage",
+    "notifications",
+    "webNavigation"
+  ],
+
+  "host_permissions": [
+    "http://127.0.0.1:8000/*"
+  ],
+
+  "background": {
+    "service_worker": "service_worker.js",
+    "type": "module"
+  },
+
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Tower A: not scanned",
+    "default_icon": {
+      "16":  "icons/icon16.png",
+      "48":  "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+
+  "icons": {
+    "16":  "icons/icon16.png",
+    "48":  "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
