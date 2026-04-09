@@ -1,0 +1,69 @@
+======================================================================
+Tower B - Data Processing - Audit Report
+Input: D:\ML_Detection_Extension\prototype2_tower_b\data_processing\data\towerB_metadata_master.csv
+======================================================================
+
+Rows: 92,666
+Columns: 36
+
+Label distribution:
+ label=0: 46,333 (50.0%)
+ label=1: 46,333 (50.0%)
+
+Probe success rates (overall):
+ dns_ok: 0.8658 (86.6%)
+ tls_ok: 0.7399 (74.0%)
+ http_ok: 0.7169 (71.7%)
+
+Probe success rates by label:
+ dns_ok:
+ label=0: 0.8539
+ label=1: 0.8777
+ tls_ok:
+ label=0: 0.7273
+ label=1: 0.7524
+ http_ok:
+ label=0: 0.7767
+ label=1: 0.6572
+
+Numeric feature columns: 16
+
+Missingness by feature (fraction missing):
+ port: 0.9997 <- partial missing
+ url_len: 0.0000
+ dns_ok: 0.0000
+ dns_num_ips: 0.0000
+ dns_has_ipv6: 0.0000
+ tls_ok: 0.0000
+ tls_issuer_is_letsencrypt: 0.0000
+ tls_cert_valid_days: 0.0000
+ tls_cert_remaining_days: 0.0000
+ http_ok: 0.0000
+ http_status_code: 0.0000
+ http_redirect_count: 0.0000
+ http_final_domain_mismatch: 0.0000
+ http_has_hsts: 0.0000
+ http_has_csp: 0.0000
+ http_has_xfo: 0.0000
+
+Leakage check (Pearson r with label):
+ had_scheme_raw: r=0.9364 <- LEAKAGE ARTEFACT - EXCLUDE
+ placeholder_added: r=-0.9364 <- LEAKAGE ARTEFACT - EXCLUDE
+
+All numeric features - |Pearson r| with label (sorted):
+  port: |r|=0.6607 <- EXCLUDE (99.97% missing)
+  dns_num_ips: |r|=0.2533
+  http_ok: |r|=0.1326
+  http_has_hsts: |r|=0.0547
+  http_status_code: |r|=0.0507
+  url_len: |r|=0.0468
+  tls_cert_remaining_days: |r|=0.0425
+  http_final_domain_mismatch: |r|=0.0411
+  http_has_xfo: |r|=0.0384
+  dns_ok: |r|=0.0350
+  tls_ok: |r|=0.0285
+  http_has_csp: |r|=0.0239
+  http_redirect_count: |r|=0.0168
+  tls_cert_valid_days: |r|=0.0131
+  dns_has_ipv6: |r|=nan <- EXCLUDE (zero variance — constant column)
+  tls_issuer_is_letsencrypt: |r|=nan <- EXCLUDE (zero variance — constant column)
