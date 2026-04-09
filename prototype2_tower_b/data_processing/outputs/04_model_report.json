@@ -1,0 +1,71 @@
+{
+  "model": "HistGradientBoostingClassifier",
+  "n_features": 12,
+  "features": [
+    "dns_num_ips",
+    "dns_ok",
+    "http_final_domain_mismatch",
+    "http_has_csp",
+    "http_has_hsts",
+    "http_has_xfo",
+    "http_ok",
+    "http_redirect_count",
+    "http_status_code",
+    "tls_cert_remaining_days",
+    "tls_cert_valid_days",
+    "tls_ok"
+  ],
+  "train_rows": 71715,
+  "val_rows": 11035,
+  "test_rows": 9916,
+  "train_time_s": 4.51,
+  "metrics": {
+    "val_pr_auc": 0.5914,
+    "test_pr_auc": 0.334,
+    "val_roc_auc": 0.5945,
+    "test_roc_auc": 0.5324,
+    "brier_score": 0.2579
+  },
+  "thresholds": {
+    "best_f1": {
+      "threshold": 0.044472,
+      "tp": 2587,
+      "fp": 5004,
+      "tn": 1903,
+      "fn": 422,
+      "precision": 0.340798,
+      "recall": 0.859754,
+      "f1": 0.488113,
+      "fpr": 0.724482,
+      "fnr": 0.140246
+    },
+    "fpr_cap_02": {
+      "threshold": 0.99,
+      "tp": 24,
+      "fp": 3,
+      "tn": 6904,
+      "fn": 2985,
+      "precision": 0.888889,
+      "recall": 0.007976,
+      "f1": 0.01581,
+      "fpr": 0.000434,
+      "fnr": 0.992024
+    },
+    "fpr_cap_05": {
+      "threshold": 0.99,
+      "tp": 24,
+      "fp": 3,
+      "tn": 6904,
+      "fn": 2985,
+      "precision": 0.888889,
+      "recall": 0.007976,
+      "f1": 0.01581,
+      "fpr": 0.000434,
+      "fnr": 0.992024
+    }
+  },
+  "latency_ms_per_url": 0.0345,
+  "model_size_mb": 1.7246,
+  "missing_sentinel": "NaN (native HGB missing value support)",
+  "random_seed": 42
+}
