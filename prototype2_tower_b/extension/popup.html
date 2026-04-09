@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<!--
+  Tower B - Prototype 2 - popup.html
+
+  Purpose
+  The extension action popup for the standalone Tower B deployment. Displays the infrastructure-based phishing risk 
+  score for the domain of the currently active tab.
+
+  Differences from Prototype 1 (Tower A)
+  Tower B operates on domain-level signals, so the popup shows:
+    - The hostname scored (not the full URL path)
+    - p_b (infrastructure probability) rather than p_phish (lexical probability)
+    - A metadata panel showing which probes succeeded (DNS, TLS, HTTP)
+    - A cache indicator showing whether the result was from a live probe or a cached entry - important because live 
+    probes take 2–8 seconds
+
+  The metadata panel is included specifically for Prototype 2 to make the infrastructure signals visible and 
+  inspectable. In Prototype 3, this detail is moved to an expandable "Technical Details" section.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tower B - Metadata Detector</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      width: 360px;
+      min-height: 220px;
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      color: #1a1a2e;
+      background: #f5f7fb;
+    }
+
+    /* Header */
+    .header {
+      background: #1a3a6b;
+      color: #fff;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header h1 { font-size: 14px; font-weight: bold; }
+    .header .version { font-size: 10px; opacity: 0.65; }
+
+    /* Body */
+    .body { padding: 12px 14px; }
+
+    /* Hostname row - shows the domain being scored */
+    .hostname-row {
+      background: #e8edf5;
+      border-radius: 4px;
+      padding: 6px 10px;
+      margin-bottom: 10px;
+      font-size: 11px;
+      color: #333;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .hostname-label {
+      font-size: 10px;
+      color: #888;
+      margin-bottom: 2px;
+    }
+
+    /* Score card */
+    .score-card {
+      background: #fff;
+      border: 1px solid #dde3ef;
+      border-radius: 6px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+    }
+
+    .risk-pill {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: bold;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+    .risk-pill.danger { background: #c62828; }
+    .risk-pill.suspicious { background: #ef6c00; }
+    .risk-pill.low { background: #f9a825; color: #333; }
+    .risk-pill.unknown { background: #616161; }
+
+    .p-score {
+      font-size: 28px;
+      font-weight: bold;
+      color: #1a3a6b;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .p-label {
+      font-size: 10px;
+      color: #666;
+      margin-bottom: 8px;
+    }
+
+    .decision-row { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+    .decision-badge {
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    .decision-badge.allow { background: #e8f5e9; color: #2e7d32; }
+    .decision-badge.warn { background: #fff3e0; color: #ef6c00; }
+    .decision-badge.block { background: #ffebee; color: #c62828; }
+
+    /* Metadata signals panel */
+    /* Shows which of the three infrastructure probes succeeded.
+       This panel is a key feature of Prototype 2 - it makes the basis of the score transparent to the user. */
+    .meta-panel {
+      background: #fff;
+      border: 1px solid #dde3ef;
+      border-radius: 6px;
+      padding: 8px 12px;
+      margin-bottom: 10px;
+      font-size: 11px;
+    }
+    .meta-panel .meta-title {
+      font-weight: bold;
+      color: #1a3a6b;
+      margin-bottom: 6px;
+      font-size: 11px;
+    }
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 3px;
+      color: #444;
+    }
+    .meta-ok { color: #2e7d32; font-weight: bold; }
+    .meta-fail { color: #c62828; font-weight: bold; }
+    .meta-na { color: #999; }
+
+    /* Cache indicator */
+    .cache-row {
+      font-size: 10px;
+      color: #888;
+      margin-top: 4px;
+      padding-top: 4px;
+      border-top: 1px solid #eee;
+    }
+    .cache-hit { color: #1a6b3a; }
+    .cache-probe { color: #6b3a1a; }
+
+    /* Scan button */
+    #scanBtn {
+      width: 100%;
+      padding: 8px;
+      background: #1a3a6b;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    #scanBtn:hover { background: #122a52; }
+    #scanBtn:disabled { background: #9ba8c0; cursor: default; }
+
+    #statusText {
+      margin-top: 8px;
+      font-size: 11px;
+      color: #888;
+      text-align: center;
+      min-height: 16px;
+    }
+    #statusText.error { color: #c62828; }
+
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>Tower B - Metadata Detector</h1>
+    <span class="version">Prototype 2</span>
+  </div>
+
+  <div class="body">
+
+    <!-- Hostname display - Tower B scores domains, not full URLs -->
+    <div class="hostname-label">Domain scored:</div>
+    <div id="hostnameDisplay" class="hostname-row">Loading…</div>
+
+    <!-- Score card -->
+    <div id="scoreCard" class="score-card hidden">
+      <span id="riskPill" class="risk-pill unknown">-</span>
+      <div id="pScore" class="p-score">-</div>
+      <div class="p-label">infrastructure phishing probability (p_b)</div>
+      <div class="decision-row">
+        <span>Decision:</span>
+        <span id="decisionBadge" class="decision-badge">-</span>
+      </div>
+    </div>
+
+    <!-- Metadata signals panel -->
+    <div id="metaPanel" class="meta-panel hidden">
+      <div class="meta-title">Infrastructure Signals</div>
+      <div class="meta-row">
+        <span>DNS resolution</span>
+        <span id="metaDns" class="meta-na">-</span>
+      </div>
+      <div class="meta-row">
+        <span>TLS certificate</span>
+        <span id="metaTls" class="meta-na">-</span>
+      </div>
+      <div class="meta-row">
+        <span>HTTP response</span>
+        <span id="metaHttp" class="meta-na">-</span>
+      </div>
+      <div class="cache-row">
+        Result source: <span id="cacheIndicator">-</span>
+      </div>
+    </div>
+
+    <button id="scanBtn">Scan Current Domain</button>
+    <div id="statusText"></div>
+
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+{
+  "manifest_version": 3,
+  "name": "Tower B - Metadata Detector (Prototype 2)",
+  "version": "1.0.0",
+  "description": "Phishing detection using domain infrastructure metadata (DNS, TLS, HTTP). Standalone Tower B deployment - part of the Two-Tower Hybrid ML Framework.",
+
+  "permissions": [
+    "activeTab",
+    "storage",
+    "notifications",
+    "webNavigation"
+  ],
+
+  "host_permissions": [
+    "http://127.0.0.1:8001/*"
+  ],
+
+  "background": {
+    "service_worker": "service_worker.js",
+    "type": "module"
+  },
+
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Tower B: not scanned",
+    "default_icon": {
+      "16":  "icons/icon16.png",
+      "48":  "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+
+  "icons": {
+    "16":  "icons/icon16.png",
+    "48":  "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
