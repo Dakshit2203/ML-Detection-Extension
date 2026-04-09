@@ -64,6 +64,17 @@ class TowerB:
         spec = json.loads(Path(feature_spec_path).read_text(encoding="utf-8"))
         self.features: list = spec["features"]
 
+        # Load pre-computed permutation importances produced by 04_train_eval.py.
+        # HGB does not expose feature_importances_ directly, so these are saved separately and loaded here for use by
+        # the Prototype 3 XAI layer.
+        importances_path = Path(feature_spec_path).parent / "feature_importances_B.json"
+        if importances_path.exists():
+            imp_data = json.loads(importances_path.read_text(encoding="utf-8"))
+            imp_map = imp_data.get("importances", {})
+            self.importances = [imp_map.get(f, 0.0) for f in self.features]
+        else:
+            self.importances = None
+
         # Initialise the domain metadata cache
         self.cache = SQLiteCache(settings.cache_sqlite_path)
 
@@ -111,7 +122,7 @@ class TowerB:
             meta.get(f, None)  # None becomes NaN in the DataFrame - handled natively by HGB
             for f in self.features
         ]
-        X = pd.DataFrame([row], columns=self.features)
+        X = np.array([row], dtype=np.float64).reshape(1, -1)
 
         # Inference
         try:
