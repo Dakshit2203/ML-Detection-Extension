@@ -12,6 +12,7 @@ import json
 import sys
 import time
 from pathlib import Path
+from sklearn.inspection import permutation_importance
 
 import joblib
 import numpy as np
@@ -29,6 +30,7 @@ DATA_DIR = Path(__file__).resolve().parent / "outputs" / "splits"
 SPEC_PATH = Path(__file__).resolve().parent / "outputs" / "feature_spec_B.json"
 OUTPUT_DIR = Path(__file__).resolve().parent / "outputs"
 ARTIFACTS_DIR = Path(__file__).resolve().parents[1] / "artifacts" / "towerB"
+importances_path = ARTIFACTS_DIR / "feature_importances_B.json"
 
 # Fixed random seed for reproducibility
 SEED = 42
@@ -208,6 +210,33 @@ def main() -> None:
         runs.append((time.perf_counter() - t0) * 1000 / n_sample)
     latency_ms = float(np.median(runs))
     print(f"\nInference latency: {latency_ms:.4f} ms/URL (median of 5 runs on {n_sample} URLs)")
+
+    # Compute permutation feature importances on the validation set.
+    # HistGradientBoostingClassifier does not expose feature_importances_ as a direct attribute, so permutation
+    # importance is computed here and saved to JSON for use by the Prototype 3 XAI layer.
+    print("\nComputing permutation feature importances on validation set...")
+    perm_result = permutation_importance(
+        model, X_val, y_val,
+        n_repeats=10,
+        random_state=SEED,
+        scoring="average_precision",
+    )
+    importances_dict = {
+        features[i]: round(float(perm_result.importances_mean[i]), 6)
+        for i in range(len(features))
+    }
+    importances_path = ARTIFACTS_DIR / "feature_importances_B.json"
+    importances_path.write_text(
+        json.dumps({
+            "method": "permutation_importance",
+            "scoring": "average_precision",
+            "n_repeats": 10,
+            "set": "validation",
+            "importances": importances_dict,
+        }, indent=2),
+        encoding="utf-8",
+    )
+    print(f"Feature importances saved: {importances_path}")
 
     # Model size
     model_path = ARTIFACTS_DIR / "hgb.joblib"

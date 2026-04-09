@@ -1,0 +1,20 @@
+{
+  "method": "permutation_importance",
+  "scoring": "average_precision",
+  "n_repeats": 10,
+  "set": "validation",
+  "importances": {
+    "dns_num_ips": 0.024999,
+    "dns_ok": 0.0,
+    "http_final_domain_mismatch": -0.018704,
+    "http_has_csp": 0.025354,
+    "http_has_hsts": -0.003743,
+    "http_has_xfo": 0.056824,
+    "http_ok": 0.07498,
+    "http_redirect_count": -0.005024,
+    "http_status_code": 0.020571,
+    "tls_cert_remaining_days": 0.202971,
+    "tls_cert_valid_days": 0.206894,
+    "tls_ok": 0.0
+  }
+}
