@@ -1,0 +1,46 @@
+{
+  "name": "TowerB_metadata_v1",
+  "version": "1.0",
+  "target": "label",
+  "n_features": 12,
+  "features": [
+    "dns_num_ips",
+    "dns_ok",
+    "http_final_domain_mismatch",
+    "http_has_csp",
+    "http_has_hsts",
+    "http_has_xfo",
+    "http_ok",
+    "http_redirect_count",
+    "http_status_code",
+    "tls_cert_remaining_days",
+    "tls_cert_valid_days",
+    "tls_ok"
+  ],
+  "exclusions": {
+    "leakage": [
+      "had_scheme_raw",
+      "placeholder_added"
+    ],
+    "missing": [
+      "port"
+    ],
+    "non_numeric": [
+      "collected_at",
+      "etld1",
+      "host_norm",
+      "http_final_host",
+      "http_final_url",
+      "http_scheme_used",
+      "label",
+      "scheme_norm",
+      "source",
+      "suffix",
+      "tls_issuer_cn",
+      "tls_not_after",
+      "tls_not_before",
+      "url_norm",
+      "url_raw"
+    ]
+  }
+}

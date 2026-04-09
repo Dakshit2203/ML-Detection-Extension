@@ -1,0 +1,43 @@
+======================================================================
+Tower B - Feature Specification Summary
+======================================================================
+
+Included features: 12
+ dns_num_ips
+ dns_ok
+ http_final_domain_mismatch
+ http_has_csp
+ http_has_hsts
+ http_has_xfo
+ http_ok
+ http_redirect_count
+ http_status_code
+ tls_cert_remaining_days
+ tls_cert_valid_days
+ tls_ok
+
+Excluded features: 24
+ collected_at: non-numeric / identifier column
+ dns_has_ipv6: zero variance (constant column - confirmed by audit: |r|=nan)
+ etld1: non-numeric / identifier column
+ had_scheme_raw: preprocessing leakage artefact (|r| > 0.50 with label)
+ has_fragment: not in allowed prefix group (dns_*, tls_*, http_*)
+ has_path: not in allowed prefix group (dns_*, tls_*, http_*)
+ has_query: not in allowed prefix group (dns_*, tls_*, http_*)
+ host_norm: non-numeric / identifier column
+ http_final_host: non-numeric / identifier column
+ http_final_url: non-numeric / identifier column
+ http_scheme_used: non-numeric / identifier column
+ label: non-numeric / identifier column
+ placeholder_added: preprocessing leakage artefact (|r| > 0.50 with label)
+ port: 99.97% missing across all rows
+ scheme_norm: non-numeric / identifier column
+ source: non-numeric / identifier column
+ suffix: non-numeric / identifier column
+ tls_issuer_cn: non-numeric / identifier column
+ tls_issuer_is_letsencrypt: zero variance (constant column - confirmed by audit: |r|=nan)
+ tls_not_after: non-numeric / identifier column
+ tls_not_before: non-numeric / identifier column
+ url_len: not in allowed prefix group (dns_*, tls_*, http_*)
+ url_norm: non-numeric / identifier column
+ url_raw: non-numeric / identifier column
