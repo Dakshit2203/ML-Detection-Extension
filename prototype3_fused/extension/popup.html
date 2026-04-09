@@ -1,10 +1,213 @@
 <!DOCTYPE html>
+<!--
+  Prototype 3 - Fused System - popup.html
+
+  Displays the fused risk score, individual tower scores, per-feature XAI attributions for both towers, and the
+  adaptive threshold phase.
+
+  The XAI bars are the primary addition over Prototypes 1 and 2.
+  Tower A bars show coef_i * feature_value_i (exact analytical attribution).
+  Tower B bars show HGB global feature importances alongside observed values.
+-->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>$Title$</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Two-Tower Phishing Detector</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      width: 400px;
+      min-height: 260px;
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      color: #1a1a2e;
+      background: #f4f6fb;
+    }
+
+    .header {
+      background: #1a2e5a;
+      color: #fff;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header h1 { font-size: 14px; font-weight: bold; }
+    .header .ver { font-size: 10px; opacity: 0.65; }
+
+    .body { padding: 12px 14px; }
+
+    .url-row {
+      background: #e6eaf3;
+      border-radius: 4px;
+      padding: 5px 9px;
+      margin-bottom: 10px;
+      font-size: 11px;
+      color: #333;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Fused score card */
+    .score-card {
+      background: #fff;
+      border: 1px solid #d8dfee;
+      border-radius: 6px;
+      padding: 11px 13px;
+      margin-bottom: 8px;
+    }
+
+    .risk-pill {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: bold;
+      color: #fff;
+      margin-bottom: 7px;
+    }
+    .risk-pill.danger { background: #c62828; }
+    .risk-pill.suspicious { background: #ef6c00; }
+    .risk-pill.low { background: #f9a825; color: #333; }
+    .risk-pill.safe { background: #2e7d32; }
+    .risk-pill.unknown { background: #616161; }
+
+    .p-fused { font-size: 30px; font-weight: bold; color: #1a2e5a; line-height: 1; margin-bottom: 3px; }
+    .p-label { font-size: 10px; color: #666; margin-bottom: 7px; }
+
+    .decision-row { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+    .decision-badge {
+      padding: 2px 8px; border-radius: 4px;
+      font-size: 11px; font-weight: bold; text-transform: uppercase;
+    }
+    .decision-badge.allow { background: #e8f5e9; color: #2e7d32; }
+    .decision-badge.warn { background: #fff3e0; color: #ef6c00; }
+    .decision-badge.block { background: #ffebee; color: #c62828; }
+
+    /* Individual tower scores */
+    .tower-row { display: flex; gap: 8px; margin-bottom: 8px; }
+    .tower-box {
+      flex: 1; background: #fff; border: 1px solid #d8dfee;
+      border-radius: 6px; padding: 8px 10px; text-align: center;
+    }
+    .tower-label { font-size: 10px; color: #888; margin-bottom: 3px; }
+    .tower-score { font-size: 18px; font-weight: bold; color: #1a2e5a; }
+    .tower-sub   { font-size: 10px; color: #aaa; margin-top: 2px; }
+
+    /* Tower B unavailable notice */
+    .reduced-conf {
+      font-size: 11px; color: #7a5c00;
+      background: #fff8e1; border: 1px solid #ffe082;
+      border-radius: 4px; padding: 5px 9px; margin-bottom: 8px;
+    }
+
+    /* XAI panel */
+    .xai-panel {
+      background: #fff; border: 1px solid #d8dfee;
+      border-radius: 6px; padding: 9px 12px;
+      margin-bottom: 8px; font-size: 11px;
+    }
+    .xai-title { font-weight: bold; color: #1a2e5a; font-size: 11px; margin-bottom: 6px; }
+    .xai-sub { font-size: 10px; color: #888; margin-bottom: 5px; }
+    .xai-feature {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-bottom: 4px; gap: 8px;
+    }
+    .xai-name { color: #333; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .xai-bar-wrap { width: 80px; background: #eee; border-radius: 3px; height: 8px; flex-shrink: 0; }
+    .xai-bar { height: 8px; border-radius: 3px; background: #2e5fac; }
+    .xai-bar.negative { background: #2e7d32; }
+    .xai-val { font-size: 10px; color: #555; min-width: 44px; text-align: right; }
+
+    /* Adaptive phase row */
+    .threshold-row {
+      font-size: 11px; color: #555; background: #edf0fa;
+      border-radius: 4px; padding: 5px 9px; margin-bottom: 8px;
+    }
+    .threshold-row span { font-weight: bold; color: #1a2e5a; }
+
+    #scanBtn {
+      width: 100%; padding: 8px; background: #1a2e5a; color: #fff;
+      border: none; border-radius: 5px; font-size: 13px;
+      font-weight: bold; cursor: pointer; transition: background 0.15s;
+    }
+    #scanBtn:hover { background: #111f3f; }
+    #scanBtn:disabled { background: #9ba8c0; cursor: default; }
+
+    #statusText {
+      margin-top: 8px; font-size: 11px;
+      color: #888; text-align: center; min-height: 16px;
+    }
+    #statusText.error { color: #c62828; }
+
+    .hidden { display: none; }
+    .divider { border: none; border-top: 1px solid #e0e4ef; margin: 8px 0; }
+  </style>
 </head>
 <body>
-$END$
+
+  <div class="header">
+    <h1>Two-Tower Phishing Detector</h1>
+    <span class="ver">Prototype 3</span>
+  </div>
+
+  <div class="body">
+
+    <div id="urlDisplay" class="url-row">Loading…</div>
+
+    <!-- Fused score -->
+    <div id="scoreCard" class="score-card hidden">
+      <span id="riskPill" class="risk-pill unknown">-</span>
+      <div id="pFused" class="p-fused">-</div>
+      <div class="p-label">fused probability (0.75·pA + 0.25·pB)</div>
+      <div class="decision-row">
+        <span>Decision:</span>
+        <span id="decisionBadge" class="decision-badge">-</span>
+      </div>
+    </div>
+
+    <!-- Individual tower scores -->
+    <div id="towerRow" class="tower-row hidden">
+      <div class="tower-box">
+        <div class="tower-label">Tower A (URL)</div>
+        <div id="scoreA" class="tower-score">-</div>
+        <div class="tower-sub">lexical features</div>
+      </div>
+      <div class="tower-box">
+        <div class="tower-label">Tower B (Metadata)</div>
+        <div id="scoreB" class="tower-score">-</div>
+        <div class="tower-sub">DNS / TLS / HTTP</div>
+      </div>
+    </div>
+
+    <div id="reducedConf" class="reduced-conf hidden">
+      Tower B unavailable - score based on Tower A only.
+    </div>
+
+    <!-- XAI attributions -->
+    <div id="xaiPanel" class="xai-panel hidden">
+      <div class="xai-title">Explanation</div>
+      <div class="xai-sub">Tower A - top URL features (coef × value)</div>
+      <div id="xaiA"></div>
+      <hr class="divider">
+      <div class="xai-sub">Tower B - top metadata signals (global importance)</div>
+      <div id="xaiB"></div>
+    </div>
+
+    <!-- Adaptive threshold phase -->
+    <div id="thresholdRow" class="threshold-row hidden">
+      Phase: <span id="phaseLabel">-</span>
+      &nbsp;|&nbsp; Buffer: <span id="bufferSize">-</span> URLs
+    </div>
+
+    <button id="scanBtn">Scan Current Page</button>
+    <div id="statusText"></div>
+
+  </div>
+
+  <script src="popup.js"></script>
 </body>
 </html>
