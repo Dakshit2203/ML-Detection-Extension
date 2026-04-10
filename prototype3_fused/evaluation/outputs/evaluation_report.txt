@@ -1,0 +1,32 @@
+======================================================================
+FUSED SYSTEM EVALUATION
+Test set: 9,916 URLs (eTLD+1) |Fusion: 0.75*pA + 0.25*pB (from config.py)
+======================================================================
+
+System                           PR-AUC   ROC-AUC Source
+--------------------------------------------------------------
+Tower A (LR, 35 URL features)    0.9744    0.9795 final_model_report.json
+Tower B (HGB, 12 meta features)   0.3340    0.5324 04_model_report.json
+Fused System                     0.9624    0.9702 computed (this script)
+
+Fusion gain over Tower A: PR-AUC -0.0121 ROC-AUC -0.0093
+
+System / Threshold                    Prec     Rec     F1     FPR     TP    FP    FN
+--------------------------------------------------------------------------------
+Tower A t=0.2971 best-F1 (stored) 0.9810  0.9076  0.9429 0.0077   2731    53   278
+Tower A t=0.1461 FPR<=2% (stored) 0.9463  0.9319 0.9390  0.0230
+Tower B t=0.0445 best-F1 (stored) 0.3408  0.8598  0.4881 0.7245   2587  5004   422
+Fused t=0.3050 best-F1 (computed) 0.9793  0.9099 0.9433  0.0084  2738    58   271
+Fused t=0.9900 FPR<=2% (computed) 1.0000  0.0080  0.0158  0.0000
+
+--- Tower Disagreement ---
+|pA - pB| > 0.3: 4,547 (45.9%)
+Correction zone (pA>0.7, pB<0.3): 1,782 - 20 true benign (Tower B attenuates Tower A FP)
+Pearson r(pA, pB): 0.0273(low = complementary signals)
+
+--- Score Statistics ---
+Tower A  benign mean=0.0446p95=0.1010phishing mean=0.8996p05=0.1022
+Tower B  benign mean=0.2177p95=0.5303phishing mean=0.2292p05=0.0328
+Fused    benign mean=0.0879p95=0.2069phishing mean=0.7320p05=0.1225
+
+======================================================================
