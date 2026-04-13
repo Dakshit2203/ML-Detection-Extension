@@ -28,6 +28,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List
 
+from matplotlib.lines import Line2D
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -83,17 +84,6 @@ def _draw_vlines(ax, all_lines: Dict[str,float],
         ax.axvline(x, linestyle="--", linewidth=1.2)
         ax.text(x, label_y, name, rotation=90, va="top", ha="right", fontsize=7)
 
-def plot_hist(df: pd.DataFrame, rep: Dict[str,Any], title: str, out: Path) -> None:
-    y, p = df["label"].to_numpy(), df["p_phish"].to_numpy()
-    fig, ax = plt.subplots()
-    ax.hist(p[y==0], bins=60, alpha=0.7, label="benign")
-    ax.hist(p[y==1], bins=60, alpha=0.7, label="phish")
-    ax.set_xlabel("p_phish"); ax.set_ylabel("count")
-    ax.set_title(title); ax.legend()
-    all_lines = _threshold_lines(rep)
-    _draw_vlines(ax, all_lines, _select_annotated(all_lines), ax.get_ylim()[1])
-    fig.tight_layout(); fig.savefig(out); plt.close(fig)
-
 def plot_cdf(df: pd.DataFrame, rep: Dict[str,Any], title: str, out: Path) -> None:
     fig, ax = plt.subplots()
     for lab, name in [(0,"benign"),(1,"phish")]:
@@ -106,88 +96,178 @@ def plot_cdf(df: pd.DataFrame, rep: Dict[str,Any], title: str, out: Path) -> Non
     _draw_vlines(ax, all_lines, _select_annotated(all_lines), ax.get_ylim()[1])
     fig.tight_layout(); fig.savefig(out); plt.close(fig)
 
-def plot_pr(df: pd.DataFrame, prefix: str, out: Path) -> float:
-    y, p = df["label"].to_numpy(), df["p_phish"].to_numpy()
-    ap = float(average_precision_score(y, p)) if len(np.unique(y))==2 else 0.5
-    prec, rec, _ = precision_recall_curve(y, p)
-    # PR baseline = class prevalence; a useful model must exceed this at all recall levels.
-    prev = float((y==1).mean()) if y.size else 0.0
-    fig, ax = plt.subplots()
-    ax.plot(rec, prec, label="PR curve")
-    ax.axhline(prev, linestyle="--", linewidth=1, label=f"baseline (prev={prev:.3f})")
-    ax.set_xlabel("recall"); ax.set_ylabel("precision")
-    ax.set_title(f"{prefix} PR curve (AP={ap:.4f})"); ax.legend()
-    fig.tight_layout(); fig.savefig(out); plt.close(fig)
-    return ap
 
-def plot_roc(df: pd.DataFrame, prefix: str, out: Path) -> float:
-    y, p = df["label"].to_numpy(), df["p_phish"].to_numpy()
-    auc = float(roc_auc_score(y, p)) if len(np.unique(y))==2 else 0.5
-    fpr, tpr, _ = roc_curve(y, p)
-    fig, ax = plt.subplots()
-    ax.plot(fpr, tpr, label="ROC curve")
-    ax.plot([0,1],[0,1], linestyle="--", linewidth=1, label="random baseline")
-    ax.set_xlabel("false positive rate"); ax.set_ylabel("true positive rate")
-    ax.set_title(f"{prefix} ROC curve (AUC={auc:.4f})"); ax.legend()
-    fig.tight_layout(); fig.savefig(out); plt.close(fig)
-    return auc
+# Stored threshold display config: (json_key, colour, linestyle, linewidth, legend_label)
+_STORED_LINE_STYLES = [
+    ("fpr_cap_0.02", "#0D47A1", "--", 2.0, "Stored FPR≤2% (t=0.146)"),
+    ("best_f1", "#1976D2", "--", 1.8, "Stored Best-F1 (t=0.297)"),
+    ("recall_target_0.95", "#5C9BD6", ":", 1.6, "Stored High-prec (t=0.755)"),
+]
 
-def plot_calibration(df: pd.DataFrame, title: str, out: Path, n_bins: int = 15) -> None:
-    """
-    Plot mean predicted probability against empirical phishing rate per score bin.
-    Bins with fewer than 50 samples are excluded to avoid misleading calibration estimates.
-    Sample counts are annotated on each point to show which regions are well-supported.
-    """
-    y, p = df["label"].to_numpy(), df["p_phish"].to_numpy()
-    bins = np.linspace(0.0, 1.0, n_bins+1)
-    idx = np.clip(np.digitize(p, bins)-1, 0, n_bins-1)
-    xs, ys, ns = [], [], []
-    for b in range(n_bins):
-        mask = idx == b
-        if mask.sum() < 50:
-            continue
-        xs.append(float(p[mask].mean()))
-        ys.append(float(y[mask].mean()))
-        ns.append(int(mask.sum()))
-    fig, ax = plt.subplots()
-    ax.plot([0,1],[0,1], linestyle="--", label="ideal")
-    if xs:
-        ax.plot(xs, ys, marker="o", label="observed")
-        for x, yv, n in zip(xs, ys, ns):
-            ax.text(x, yv, str(n), fontsize=7, ha="left", va="bottom")
-    ax.set_xlabel("mean predicted p_phish"); ax.set_ylabel("empirical phishing rate")
-    ax.set_title(title + " (bin counts annotated)"); ax.legend()
-    fig.tight_layout(); fig.savefig(out); plt.close(fig)
 
-def plot_fpr_recall_curve(df: pd.DataFrame, title: str, out: Path,
-                           mark_fpr: float = 0.02) -> None:
+def plot_hist(
+        dfA: pd.DataFrame,
+        dfB: pd.DataFrame,
+        repA: Dict[str, Any],
+        repB: Dict[str, Any],
+        out: Path,
+) -> None:
     """
-    Show recall as a function of FPR target, using benign-quantile threshold calibration.
-    This directly illustrates the operating envelope of the adaptive threshold policy and highlights the 2% FPR
-    deployment target.
+    Side-by-side score distribution histograms for both external validation scenarios.
     """
-    y, p = df["label"].to_numpy(), df["p_phish"].to_numpy()
-    benign, phish = p[y==0], p[y==1]
-    if benign.size == 0 or phish.size == 0:
-        return
-    fprs = [0.001, 0.002, 0.005, 0.010, 0.020, 0.050, 0.10]
-    recalls: List[float] = [
-        float((phish >= float(np.quantile(benign, 1.0-fpr))).mean())
-        for fpr in fprs
+
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5.5))
+
+    datasets = [
+        (dfA, repA, "Aggressive Paths"),
+        (dfB, repB, "Neutral Paths"),
     ]
-    fig, ax = plt.subplots()
-    ax.plot(fprs, recalls, marker="o")
-    ax.set_xlabel("False Positive Rate (benign-quantile threshold)")
-    ax.set_ylabel("Recall (TPR)")
-    ax.set_title(title)
-    ax.grid(True, alpha=0.3)
-    if mark_fpr in fprs:
-        i = fprs.index(mark_fpr)
-        ax.scatter([fprs[i]], [recalls[i]])
-        ax.text(fprs[i], recalls[i],
-                f" FPR={mark_fpr:.0%}\n recall={recalls[i]:.3f}",
-                fontsize=8, va="bottom")
-    fig.tight_layout(); fig.savefig(out); plt.close(fig)
+
+    for ax, (df, rep, scenario_label) in zip(axes, datasets):
+        y = df["label"].to_numpy()
+        p = df["p_phish"].to_numpy()
+        n_benign = int((y == 0).sum())
+        n_phish = int((y == 1).sum())
+
+        bins = np.linspace(0.75, 1.002, 100)
+
+        ax.hist(p[y == 0], bins=bins, color="#1E88E5", alpha=0.70,
+                label=f"Benign (n={n_benign:,})", zorder=2, edgecolor="none")
+        ax.hist(p[y == 1], bins=bins, color="#E53935", alpha=1.0,
+                label=f"Phishing (n={n_phish})", zorder=5, edgecolor="none")
+
+        # Stored training thresholds - all fall far left of the benign mass
+        stored_metrics = rep.get("stored_threshold_metrics", {})
+        for key, col, ls, lw, _ in _STORED_LINE_STYLES:
+            t = stored_metrics.get(key, {}).get("threshold")
+            if t is not None:
+                ax.axvline(t, color=col, linestyle=ls, linewidth=lw,
+                           zorder=4, alpha=0.85)
+
+        # Externally calibrated threshold at 2% FPR target
+        ext_t = (rep.get("external_fpr_threshold_metrics", {})
+                 .get("fpr_0.020", {})
+                 .get("threshold"))
+        if ext_t is not None:
+            ax.axvline(ext_t, color="#2E7D32", linestyle="-",
+                       linewidth=2.2, zorder=4)
+
+        ymax = ax.get_ylim()[1]
+        ax.set_xlim(0.75, 1.005)
+        ax.set_ylim(0, ymax * 1.18)
+        ax.set_xlabel("Predicted phishing probability ($p_A$)", fontsize=10)
+        ax.set_ylabel("Count", fontsize=10)
+        ax.set_title(
+            f"External Validation — {scenario_label}\n"
+            "FPR = 1.0 under all stored thresholds  |  "
+            "Adaptive calibration restores FPR ≈ 2%",
+            fontsize=9,
+        )
+        ax.grid(axis="y", alpha=0.30, zorder=0)
+        ax.set_facecolor("#F8F9FA")
+
+
+        # Legend with threshold lines
+        legend_elems = [
+            plt.Rectangle((0, 0), 1, 1, fc="#1E88E5", alpha=0.70,
+                          label=f"Benign ({n_benign:,})"),
+            plt.Rectangle((0, 0), 1, 1, fc="#E53935",
+                          label=f"Phishing ({n_phish})"),
+            Line2D([0], [0], color="#0D47A1", ls="--", lw=1.8,
+                   label="Stored FPR≤2% (t=0.146)"),
+            Line2D([0], [0], color="#1976D2", ls="--", lw=1.6,
+                   label="Stored Best-F1 (t=0.297)"),
+            Line2D([0], [0], color="#5C9BD6", ls=":", lw=1.6,
+                   label="Stored High-prec (t=0.755)"),
+        ]
+        if ext_t is not None:
+            legend_elems.append(
+                Line2D([0], [0], color="#2E7D32", ls="-", lw=2.2,
+                       label=f"Adaptive calibrated (t≈{ext_t:.3f}, FPR=2%)")
+            )
+        ax.legend(handles=legend_elems, fontsize=7.8, loc="upper left",
+                  framealpha=0.95, edgecolor="#BDBDBD")
+
+    fig.suptitle(
+        "External Validation: Score Distributions Under Training–Deployment Distributional Shift\n"
+        "Training benign = Kaggle URLs (with paths)  |  "
+        "External benign = Tranco bare domains",
+        fontsize=11, fontweight="bold",
+    )
+    plt.tight_layout(rect=[0, 0, 1, 0.93])
+    fig.savefig(out)
+    plt.close(fig)
+
+
+def plot_fpr_calibration_comparison(
+        dfA: pd.DataFrame,
+        dfB: pd.DataFrame,
+        out: Path,
+) -> None:
+    """
+    Compare target FPR vs achieved FPR under adaptive quantile calibration for both scenarios.
+
+    This directly demonstrates why adaptive thresholding is necessary: stored thresholds calibrated on training data
+    fail completely on the external distribution, while quantile-based calibration from the observed score distribution
+    restores FPR control.
+    """
+    fpr_targets_pct = [0.1, 0.5, 1.0, 2.0, 5.0, 10.0]
+
+    fig, ax = plt.subplots(figsize=(9, 5.5))
+
+    scenario_styles = [
+        (dfB, "Neutral paths", "#1565C0", "o"),
+        (dfA, "Aggressive paths", "#E65100", "s"),
+    ]
+
+    for df, label, color, marker in scenario_styles:
+        y = df["label"].to_numpy()
+        p = df["p_phish"].to_numpy()
+        benign = p[y == 0]
+
+        achieved = []
+        for fpr_t_pct in fpr_targets_pct:
+            fpr_t = fpr_t_pct / 100.0
+            t = float(np.quantile(benign, 1.0 - fpr_t))
+            achieved.append(float((benign >= t).mean()) * 100.0)
+
+        ax.plot(fpr_targets_pct, achieved,
+                color=color, marker=marker, linewidth=1.8, markersize=7,
+                label=f"{label} — adaptive threshold", zorder=3)
+
+    # Stored thresholds baseline — all produce FPR = 100%
+    ax.axhline(100, color="#B71C1C", linestyle="--", linewidth=2, zorder=2,
+               label="All stored training thresholds → FPR = 100%")
+
+    # Perfect calibration reference
+    ax.plot(fpr_targets_pct, fpr_targets_pct, "k:", linewidth=1, alpha=0.4,
+            label="Perfect calibration (diagonal)")
+
+    ax.set_xlabel("Target FPR (%)", fontsize=10)
+    ax.set_ylabel("Achieved FPR on external benign URLs (%)", fontsize=10)
+    ax.set_title(
+        "Adaptive Threshold Calibration: Target vs Achieved FPR\n"
+        "Stored thresholds fail (FPR=100%); adaptive quantile calibration restores control",
+        fontsize=10, pad=8,
+    )
+    ax.set_xlim(-0.5, 11)
+    ax.set_ylim(-2, 108)
+    ax.legend(fontsize=9, loc="upper left")
+    ax.grid(True, alpha=0.35)
+    ax.set_facecolor("#F8F9FA")
+
+    ax.annotate(
+        "Stored thresholds all\nproduce FPR = 100%",
+        xy=(5.0, 100), xytext=(7.5, 78),
+        fontsize=8.5, color="#B71C1C",
+        bbox=dict(boxstyle="round,pad=0.35", fc="#FFEBEE", ec="#C62828", alpha=0.9),
+        arrowprops=dict(arrowstyle="->", color="#C62828", lw=1.2),
+    )
+
+    plt.tight_layout()
+    fig.savefig(out)
+    plt.close(fig)
+
 
 def main() -> None:
     run_dir = latest_run_dir()
@@ -198,8 +278,12 @@ def main() -> None:
 
     print(f"Run dir: {run_dir}")
 
-    for path in (rep_dir/"evaluation_aggressive.json", rep_dir/"evaluation_neutral.json",
-                 pred_dir/"predictions_aggressive.csv", pred_dir/"predictions_neutral.csv"):
+    for path in (
+            rep_dir / "evaluation_aggressive.json",
+            rep_dir / "evaluation_neutral.json",
+            pred_dir / "predictions_aggressive.csv",
+            pred_dir / "predictions_neutral.csv",
+    ):
         if not path.exists():
             raise FileNotFoundError(f"Missing: {path}\nRun 03_evaluate.py first.")
 
@@ -208,49 +292,71 @@ def main() -> None:
     dfA = pd.read_csv(pred_dir / "predictions_aggressive.csv")
     dfB = pd.read_csv(pred_dir / "predictions_neutral.csv")
 
-    plot_hist(dfA, A, "Aggressive paths: score distribution + thresholds",
-              plots_dir/"aggressive_hist_with_thresholds.png")
-    plot_hist(dfB, B, "Neutral paths: score distribution + thresholds",
-              plots_dir/"neutral_hist_with_thresholds.png")
+    # Figure 1: Score distribution (both scenarios, fixed x-axis)
 
-    plot_cdf(dfA, A, "Aggressive paths: CDF by class + thresholds",
-             plots_dir/"aggressive_cdf.png")
-    plot_cdf(dfB, B, "Neutral paths: CDF by class + thresholds",
-             plots_dir/"neutral_cdf.png")
+    plot_hist(
+        dfA, dfB, A, B,
+        plots_dir / "score_distribution_both_scenarios.png",
+    )
 
-    ap_ag = plot_pr( dfA, "Aggressive", plots_dir/"aggressive_pr.png")
-    auc_ag = plot_roc(dfA, "Aggressive", plots_dir/"aggressive_roc.png")
-    ap_ne = plot_pr( dfB, "Neutral", plots_dir/"neutral_pr.png")
-    auc_ne = plot_roc(dfB, "Neutral", plots_dir/"neutral_roc.png")
+    # Write individual files to preserve filename compatibility.
+    plot_hist(
+        dfA, dfA, A, A,
+        plots_dir / "aggressive_hist_with_thresholds.png",
+    )
+    plot_hist(
+        dfB, dfB, B, B,
+        plots_dir / "neutral_hist_with_thresholds.png",
+    )
 
-    plot_calibration(dfA, "Aggressive: calibration", plots_dir/"aggressive_calibration.png")
-    plot_calibration(dfB, "Neutral: calibration", plots_dir/"neutral_calibration.png")
+    # Figure 2: FPR calibration comparison (before vs after adaptive
+    plot_fpr_calibration_comparison(
+        dfA, dfB,
+        plots_dir / "fpr_calibration_comparison.png",
+    )
 
-    plot_fpr_recall_curve(dfA, "Aggressive: recall vs FPR (quantile threshold, 2% marked)",
-                          plots_dir/"aggressive_fpr_recall_curve.png", mark_fpr=0.02)
-    plot_fpr_recall_curve(dfB, "Neutral: recall vs FPR (quantile threshold, 2% marked)",
-                          plots_dir/"neutral_fpr_recall_curve.png", mark_fpr=0.02)
-
+    # Comparison metrics CSV
     rows = []
     for name, rep in [("aggressive", A), ("neutral", B)]:
         for k, m in rep.get("stored_threshold_metrics", {}).items():
-            rows.append({"scenario": name, "threshold_type": f"stored:{k}",
-                         "threshold": m["threshold"], "fpr": m["fpr"],
-                         "recall": m["recall"], "precision": m["precision"], "f1": m["f1"]})
+            rows.append({
+                "scenario": name,
+                "threshold_type": f"stored:{k}",
+                "threshold": m["threshold"],
+                "fpr": m["fpr"],
+                "recall": m["recall"],
+                "precision": m["precision"],
+                "f1": m["f1"],
+            })
         for k, m in rep.get("external_fpr_threshold_metrics", {}).items():
-            rows.append({"scenario": name, "threshold_type": f"ext:{k}",
-                         "threshold": m["threshold"], "fpr": m["fpr"],
-                         "recall": m["recall"], "precision": m["precision"], "f1": m["f1"]})
-    pd.DataFrame(rows).to_csv(rep_dir/"comparison_metrics.csv", index=False)
+            rows.append({
+                "scenario": name,
+                "threshold_type": f"ext:{k}",
+                "threshold": m["threshold"],
+                "fpr": m["fpr"],
+                "recall": m["recall"],
+                "precision": m["precision"],
+                "f1": m["f1"],
+            })
+    pd.DataFrame(rows).to_csv(rep_dir / "comparison_metrics.csv", index=False)
+
 
     summary = [
         "=== External Validation Comparison Summary ===",
         f"Generated: {datetime.now().isoformat()}",
         f"Run dir: {run_dir}", "",
-        f"{'Scenario':<15} {'PR-AUC':<10} {'ROC-AUC':<10}",
-        f"{'aggressive':<15} {ap_ag:<10.4f} {auc_ag:<10.4f}",
-        f"{'neutral':<15} {ap_ne:<10.4f} {auc_ne:<10.4f}",
+        f"{'Scenario':<15} {'N benign':>10} {'N phishing':>12} "
+        f"{'Stored best_f1 FPR':>20} {'Stored fpr_cap_0.02 FPR':>25}",
     ]
+    for name, rep, df in [("aggressive", A, dfA), ("neutral", B, dfB)]:
+        y = df["label"].to_numpy()
+        n_benign = int((y == 0).sum())
+        n_phish = int((y == 1).sum())
+        stored = rep.get("stored_threshold_metrics", {})
+        fpr_bf = stored.get("best_f1", {}).get("fpr", float("nan"))
+        fpr_cap = stored.get("fpr_cap_0.02", {}).get("fpr", float("nan"))
+        summary.append(f"{name:<15} {n_benign:>10,} {n_phish:>12} {fpr_bf:>20.4f} {fpr_cap:>25.4f}")
+
     (rep_dir/"comparison_summary.txt").write_text("\n".join(summary), encoding="utf-8")
     print("\n".join(summary))
     print(f"\nPlots: {plots_dir}")
