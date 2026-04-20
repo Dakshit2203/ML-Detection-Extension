@@ -40,10 +40,9 @@ from .xai import explain_tower_a, explain_tower_b
 
 def _load(module_name: str, file_path: Path):
     """
-    Loads a Python module directly from its file path and registers it in
-    sys.modules under module_name. This avoids the namespace collision that
-    occurs when both prototype1_tower_a/ and prototype2_tower_b/ each contain
-    a package named 'backend' — importing by path bypasses that ambiguity.
+    Loads a Python module directly from its file path and registers it in sys.modules under module_name. This avoids
+    the namespace collision that occurs when both prototype1_tower_a/ and prototype2_tower_b/ each contain a package
+    named 'backend' - importing by path bypasses that ambiguity.
     """
     spec = importlib.util.spec_from_file_location(module_name, file_path)
     module = importlib.util.module_from_spec(spec)
@@ -52,12 +51,12 @@ def _load(module_name: str, file_path: Path):
     return module
 
 
-# ── Tower A — Prototype 1 ─────────────────────────────────────────────────────
+# Tower A - Prototype 1
 
 P1_BACKEND = Path(MODEL_A_PATH).parents[1]  # prototype1_tower_a/backend/
 
-# The feature group modules (group_a_structure etc.) are imported by name
-# inside TowerAInference.__init__, so the features/ directory must be on sys.path.
+# The feature group modules (group_a_structure etc.) are imported by name inside TowerAInference.__init__, so the
+# features/ directory must be on sys.path.
 if str(FEATURES_A_DIR) not in sys.path:
     sys.path.insert(0, str(FEATURES_A_DIR))
 
@@ -67,13 +66,13 @@ _p1_adp = _load("p1_adaptive", P1_BACKEND / "adaptive_threshold.py")
 TowerAInference = _p1_inf.TowerAInference
 AdaptiveThreshold = _p1_adp.AdaptiveThreshold
 
-# ── Tower B — Prototype 2 ─────────────────────────────────────────────────────
+# Tower B - Prototype 2
 
 P2_BACKEND = TOWER_B_BACKEND / "backend"
 
 # towerB.py uses relative imports (from .config import settings, etc.).
-# Registering a fake package called "p2_backend" means those relative imports
-# resolve correctly: ".config" becomes "p2_backend.config" and so on.
+# Registering a fake package called "p2_backend" means those relative imports resolve correctly: ".config" becomes
+# "p2_backend.config" and so on.
 _p2_pkg = types.ModuleType("p2_backend")
 _p2_pkg.__path__ = [str(P2_BACKEND)]
 _p2_pkg.__package__ = "p2_backend"

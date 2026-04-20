@@ -11,8 +11,8 @@ library and adds no measurable latency. Positive values push the score towards p
 
 Tower B - global feature importance
 HGB exposes feature_importances_ (mean decrease in impurity). This is a global surrogate rather than a true per-instance
-explanation. It is reported as such in the popup. Full per-instance attribution would require TreeSHAP, which is out of
-scope given the browser-latency constraints of this prototype.
+explanation. It is reported as such in the popup. For true per-instance Tower B explanations we'd need TreeSHAP;
+deferred for latency.
 
 Both functions return a list of dicts sorted by descending magnitude, truncated to top_n, for direct rendering in popup.js.
 """
@@ -61,12 +61,10 @@ def explain_tower_b(
     top_n: int = 5,
 ) -> List[Dict[str, Any]]:
     """
-    Returns the top_n Tower B features by permutation importance alongside
-    the observed metadata values for the scored domain.
+    Returns the top_n Tower B features by permutation importance alongside the observed metadata values for the scored domain.
 
-    Importances are pre-computed during training (04_train_eval.py) because
-    HistGradientBoostingClassifier does not expose feature_importances_
-    as a direct attribute.
+    Importances are pre-computed during training (04_train_eval.py) because HistGradientBoostingClassifier does not
+    expose feature_importances_ as a direct attribute.
     """
     if importances is None:
         return []

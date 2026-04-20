@@ -17,6 +17,6 @@ Operating points (val threshold -> test performance):
  [fpr_cap_02] t=0.9900precision=0.8889 recall=0.0080fpr=0.0004 f1=0.0158
  [fpr_cap_05] t=0.9900precision=0.8889 recall=0.0080fpr=0.0004 f1=0.0158
 
-Latency:    0.0345 ms/URL
+Latency:    0.0432 ms/URL
 Model size: 1.7246 MB
 ======================================================================

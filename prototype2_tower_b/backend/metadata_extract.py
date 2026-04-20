@@ -17,7 +17,7 @@ looks completely legitimate while still exhibiting infrastructure signals that b
 Missing value handling
 If any probe fails (network timeout, connection refused, TLS error), the corresponding features are recorded as None.
 The HGB model handles None values natively via its internal missing-value mechanism - it was trained with the same
--9999 sentinel that towerB.py uses to fill None values before calling predict_proba(). This means a failed TLS probe
+Nan that towerB.py uses to fill None values before calling predict_proba(). This means a failed TLS probe
 does not prevent scoring; it simply means the model uses its learned fallback for TLS features.
 
 Timeout values

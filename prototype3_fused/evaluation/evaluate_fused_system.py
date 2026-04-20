@@ -204,16 +204,16 @@ def pick_threshold_best_f1(y_val: np.ndarray, p_val: np.ndarray) -> float:
     return best_t
 
 
-def pick_threshold_fpr_cap(
-    y_val: np.ndarray, p_val: np.ndarray, fpr_cap: float = 0.02
-) -> float:
-    best_t = 0.99
-    for t in np.linspace(0.99, 0.01, 500):
+def pick_threshold_fpr_cap(y_val, p_val, fpr_cap=0.02):
+    best_t, best_recall = 0.99, 0.0
+    for t in np.linspace(0.01, 0.99, 500):
         preds = (p_val >= t).astype(int)
         tn, fp, fn, tp = confusion_matrix(y_val, preds, labels=[0, 1]).ravel()
-        if (fp / (fp + tn) if (fp + tn) > 0 else 0.0) <= fpr_cap:
+        fpr = fp / (tn + fp) if (tn + fp) > 0 else 0.0
+        rec = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+        if fpr <= fpr_cap and rec > best_recall:
+            best_recall = rec
             best_t = float(t)
-            break
     return best_t
 
 
@@ -348,33 +348,6 @@ def fig_disagreement_scatter(y, p_a, p_b, out_path: Path) -> None:
 
 
 def fig_tower_a_features(model_a, feature_cols: list, X_test: np.ndarray,
-                         out_path: Path) -> None:
-    coef = model_a.coef_[0]
-    attrs = coef * np.abs(X_test).mean(axis=0)
-    order = np.argsort(np.abs(attrs))[::-1][:15]
-    names = [feature_cols[i].replace("_", " ") for i in order]
-    vals = attrs[order]
-
-    fig, ax = plt.subplots(figsize=(8, 6))
-    ax.barh(range(len(names)), vals,
-            color=["#1f77b4" if v > 0 else "#2ca02c" for v in vals],
-            edgecolor="white", height=0.7)
-    ax.set_yticks(range(len(names)))
-    ax.set_yticklabels(names, fontsize=9)
-    ax.invert_yaxis()
-    ax.axvline(0, color="black", linewidth=0.8)
-    ax.set(xlabel="Mean contribution (coef × |feature value|)",
-           title="Tower A - Top 15 URL Features by Mean Attribution\n"
-                 "(Blue = phishing signal, Green = benign signal)")
-    ax.grid(axis="x", alpha=0.3)
-    ax.legend(handles=[
-        mpatches.Patch(color="#1f77b4", label="Phishing signal"),
-        mpatches.Patch(color="#2ca02c", label="Benign signal"),
-    ], loc="lower right")
-    _save(fig, out_path)
-
-
-def fig_tower_a_features(model_a, feature_cols: list, X_test: np.ndarray,
                           out_path: Path) -> None:
     coef = model_a.coef_[0]
     attrs = coef * np.abs(X_test).mean(axis=0)
@@ -467,7 +440,7 @@ def fig_confusion_matrices(y, p_a, p_b, p_fused,
         prec_v = tp / (tp + fp) if (tp + fp) > 0 else 0.0
         rec_v = tp / (tp + fn) if (tp + fn) > 0 else 0.0
         fpr_v = fp / (tn + fp) if (tn + fp) > 0 else 0.0
-        ax.set_title(f"{title}\nt={t:.4f} Prec={prec_v:.3f}"
+        ax.set_title(f"{title}\nt={t:.4f} Prec={prec_v:.3f} "
                      f"Rec={rec_v:.3f} FPR={fpr_v:.3f}", fontsize=9)
         for i in range(2):
             for j in range(2):

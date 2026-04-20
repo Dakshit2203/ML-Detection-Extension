@@ -10,7 +10,7 @@ via ThreadPoolExecutor on a single port (8002).
 The fusion formula is:
 p_fused = 0.75 * p_A + 0.25 * p_B
 
-The 3:1 weighting reflects Tower A's empirically stronger performance (PR-AUC 0.9744 vs Tower B's 0.5914 on the 
+The 3:1 weighting reflects Tower A's empirically stronger performance (PR-AUC 0.9744 vs Tower B's 0.3340 on the
 validation set). Tower B acts as a correction signal rather than a co-equal detector.
 
 The same three-phase mechanism from Prototype 1 is applied to p_fused. Thresholds calibrate to real browsing data rather 

@@ -52,9 +52,7 @@ def pct(n, d: int) -> str:
 def normalise_url(raw) -> tuple:
     """
     Apply the URL normalisation contract and return (url_norm, meta, error_reason).
-
-    Return error_reason=None on success, or a descriptive string on failure.
-    path, query, and fragment are preserved verbatim
+    Return error_reason=None on success, or a descriptive string on failure. path, query, and fragment are preserved verbatim
     """
     if not isinstance(raw, str):
         return None, None, "non_string"
@@ -113,8 +111,7 @@ def normalise_url(raw) -> tuple:
     return url_norm, meta, None
 
 def clean(df_in: pd.DataFrame, label: int, source: str) -> tuple:
-    """ Normalise all URLs in df_in and return the cleaned DataFrame, rejection counts,
-    and pre-dedup size"""
+    """ Normalise all URLs in df_in and return the cleaned DataFrame, rejection counts, and pre-dedup size"""
     reject = Counter()
     rows = []
 
@@ -255,7 +252,8 @@ def main() -> None:
     tr_clean.to_csv(CLEAN_DIR / "tranco_clean.csv", index=False, quoting=csv.QUOTE_MINIMAL)
     kg_clean.to_csv(CLEAN_DIR / "kaggle_benign_clean.csv", index=False, quoting=csv.QUOTE_MINIMAL)
 
-    # Any benign domain that also appears in the phishing set is removed to prevent the model learning to distinguish sources rather than URL characteristics.
+    # Any benign domain that also appears in the phishing set is removed to prevent the model learning to distinguish
+    # sources rather than URL characteristics.
     phishing_domains = set(pt_clean["etld1"].dropna())
     kg_no = kg_clean[~kg_clean["etld1"].isin(phishing_domains)].copy()
     tr_no = tr_clean[~tr_clean["etld1"].isin(phishing_domains)].copy()

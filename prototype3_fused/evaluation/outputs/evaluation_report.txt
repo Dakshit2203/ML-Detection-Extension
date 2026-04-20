@@ -17,7 +17,7 @@ Tower A t=0.2971 best-F1 (stored) 0.9810  0.9076  0.9429 0.0077   2731    53   2
 Tower A t=0.1461 FPR<=2% (stored) 0.9463  0.9319 0.9390  0.0230
 Tower B t=0.0445 best-F1 (stored) 0.3408  0.8598  0.4881 0.7245   2587  5004   422
 Fused t=0.3050 best-F1 (computed) 0.9793  0.9099 0.9433  0.0084  2738    58   271
-Fused t=0.9900 FPR<=2% (computed) 1.0000  0.0080  0.0158  0.0000
+Fused t=0.2378 FPR<=2% (computed) 0.9372  0.9182  0.9276  0.0268
 
 --- Tower Disagreement ---
 |pA - pB| > 0.3: 4,547 (45.9%)

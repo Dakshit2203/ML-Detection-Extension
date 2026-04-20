@@ -18,7 +18,7 @@
   "train_rows": 71715,
   "val_rows": 11035,
   "test_rows": 9916,
-  "train_time_s": 4.51,
+  "train_time_s": 4.21,
   "metrics": {
     "val_pr_auc": 0.5914,
     "test_pr_auc": 0.334,
@@ -64,7 +64,7 @@
       "fnr": 0.992024
     }
   },
-  "latency_ms_per_url": 0.0345,
+  "latency_ms_per_url": 0.0432,
   "model_size_mb": 1.7246,
   "missing_sentinel": "NaN (native HGB missing value support)",
   "random_seed": 42

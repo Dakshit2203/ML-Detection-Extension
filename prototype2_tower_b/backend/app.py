@@ -28,6 +28,9 @@ Data flow for POST /predict
        c. Build the 18-feature vector and call HGB predict_proba().
   4. Apply the decision policy (fixed thresholds by default).
   5. Return p_b, risk_level, decision, threshold state, and a debug block.
+
+Run from prototype2_tower_b/:
+    uvicorn backend.app:app --host 127.0.0.1 --port 8001
 """
 
 from __future__ import annotations

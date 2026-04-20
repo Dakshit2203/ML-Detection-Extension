@@ -17,7 +17,7 @@ the decision.
 Feature vector construction
 The feature_spec_B.json file locks the 18 feature columns and their order. When constructing the input row for 
 predict_proba(), each feature value is read from the metadata dictionary. If a value is missing (None - indicating a 
-failed probe), it is replaced with the sentinel value -9999.
+failed probe), it is replaced with the NaN.
 
 The HGB model was trained with this same sentinel, so the model has learned what to do when a probe fails. This is 
 preferable to imputing a mean or median because it preserves the information that the probe failed, which is itself a 

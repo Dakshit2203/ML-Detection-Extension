@@ -72,7 +72,7 @@ adaptive = AdaptiveThreshold(
 # FALLBACK_RED (0.99): only clear-cut phishing URLs (p≥99%) trigger even
 # a warn during Phase 1 (since LEARNING_MODE_WARN_AT = 0.9999 takes
 # precedence, the effective threshold during Phase 1 is 0.9999).
-# FALLBACK_ORANGE: not used during Phase 1 (overridden by phase logic).
+# FALLBACK_ORANGE: used by adaptive_threshold when Phase 1 is active.
 FALLBACK_RED = 0.99
 FALLBACK_ORANGE = 0.95
 
